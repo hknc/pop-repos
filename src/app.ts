@@ -1,4 +1,6 @@
 import express from "express"
+import compression from "compression"
+import helmet from "helmet"
 import cors from "cors"
 import http from "http"
 import { AddressInfo } from "net"
@@ -26,6 +28,9 @@ class App {
   }
 
   private initializeMiddlewares() {
+    // security
+    this.app.use(helmet())
+
     if (this.env === "production") {
       // production middlewares
       this.app.use(cors({ origin: process.env.HOST_DOMAIN, credentials: true }))
@@ -33,6 +38,8 @@ class App {
       // development middlewares
       this.app.use(cors({ origin: true, credentials: true }))
     }
+
+    this.app.use(compression())
 
     // parsers
     this.app.use(express.json())
