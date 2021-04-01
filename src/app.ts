@@ -21,6 +21,10 @@ class App {
     this.initializeRoutes(routes)
   }
 
+  public getApp() {
+    return this.app
+  }
+
   private initializeMiddlewares() {
     if (this.env === "production") {
       // production middlewares
