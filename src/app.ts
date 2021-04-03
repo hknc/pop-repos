@@ -5,9 +5,11 @@ import cors from "cors"
 import http from "http"
 import { AddressInfo } from "net"
 
+import Env from "./utils/Env"
 import Route from "./interfaces/route.interface"
+import logger from "./utils/logger"
 
-class App {
+export default class App {
   public app: express.Application
   public serverAddress: string
   public port: string | number
@@ -15,9 +17,9 @@ class App {
 
   constructor(routes: Route[]) {
     this.app = express()
-    this.port = process.env.PORT || 3000
-    this.serverAddress = process.env.SERVER_ADDRESS || ""
-    this.env = process.env.NODE_ENV || "development"
+    this.port = Env.get("PORT", 3000)
+    this.serverAddress = Env.get("SERVER_ADDRESS")
+    this.env = Env.get("NODE_ENV")
 
     this.initializeMiddlewares()
     this.initializeRoutes(routes)
@@ -56,7 +58,7 @@ class App {
     const server = this.app.listen(+this.port, this.serverAddress, () => {
       const address: AddressInfo = server.address() as AddressInfo
 
-      console.info("Server running", {
+      logger.info("Server running", {
         address: address.address,
         port: address.port,
         url: `http://${this.serverAddress}:${address.port}`,
@@ -66,5 +68,3 @@ class App {
     return server
   }
 }
-
-export default App
