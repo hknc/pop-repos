@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    env_file:
+      - ./.env
+    ports:
+      - "3000:3000"
+    command: ["yarn", "start:dev"]
+    volumes:
+      - .:/app/
+      # - .:/app/node_modules
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:6.2
+    container_name: redis
+    command: ["redis-server"]
+    hostname: redis
+    # networks:
+    #   - redis-net
+    volumes:
+      - redis-data:/data
+
+# networks:
+#   redis-net:
+
+volumes:
+  redis-data:
