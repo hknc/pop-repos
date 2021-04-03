@@ -1,10 +1,10 @@
 import request from "supertest"
 import App from "../app"
-import IndexRoute from "./index.route"
+import IndexRoute from "../routes/index.route"
 
 describe("testing main", () => {
   describe("[GET] /", () => {
-    it("response statusCode 200", async (done) => {
+    it("response statusCode 200", async () => {
       const indexRoute = new IndexRoute()
       const app = new App([indexRoute])
 
@@ -12,8 +12,6 @@ describe("testing main", () => {
         .get(indexRoute.path)
         .expect(200)
         .expect("Content-Type", /application\/json/)
-
-      done()
     })
   })
 })
