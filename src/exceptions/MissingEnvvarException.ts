@@ -1,4 +1,4 @@
-import BaseException from "../exception/BaseException"
+import BaseException from "./BaseException"
 
 export default class MissingEnvvarException extends BaseException {
   constructor(envvar: string) {

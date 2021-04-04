@@ -1,22 +1,22 @@
 {
-	"compilerOptions": {
-		"lib": ["es2020"],
-		"module": "commonjs",
-		"moduleResolution": "node",
-		"target": "es2020",
+  "compilerOptions": {
+    "lib": ["es2020"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es2020",
 
-		"strict": true,
-		"esModuleInterop": true,
-		"skipLibCheck": true,
-		"forceConsistentCasingInFileNames": true,
-		"outDir": "dist",
-		"sourceMap": true,
-		"noImplicitAny": true,
-		"baseUrl": "./",
-		"paths": {
-			"*": ["node_modules/*"]
-		}
-	},
-	"include": ["src/**/*"],
-	"exclude": ["node_modules", "**/*.spec.ts"]
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "dist",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "baseUrl": "./",
+    "paths": {
+      "*": ["node_modules/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
 }

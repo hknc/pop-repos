@@ -8,5 +8,11 @@
       "restart": true,
       "processId": "${command:PickProcess}"
     }
-  ]
+  ],
+  "[typescript]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+    },
+    "editor.formatOnSave": true
+  }
 }

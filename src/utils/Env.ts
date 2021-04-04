@@ -1,7 +1,7 @@
 import dotenv from "dotenv"
 import path from "path"
 import validateEnvs from "../utils/validateEnvs"
-import MissingEnvvarException from "../exception/MissingEnvvarException"
+import MissingEnvvarException from "../exceptions/MissingEnvvarException"
 
 // load .env
 dotenv.config({ path: path.resolve(__dirname, "../.env") })
@@ -9,6 +9,7 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") })
 validateEnvs()
 
 export default class Env {
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   public static has(envvar: string) {
     return process.env[envvar] !== undefined
   }

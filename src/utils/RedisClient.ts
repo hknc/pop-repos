@@ -3,11 +3,10 @@ import logger from "./logger"
 import Env from "./Env"
 
 export default class Redis {
-  public static redis: redis.Redis | null = null
-  // public static client: redis.Redis
+  public static redis: redis.Redis
 
   public static init(): void {
-    if (Redis.redis === null) {
+    if (!Redis.redis) {
       Redis.redis = this.create()
     }
   }
