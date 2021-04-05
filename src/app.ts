@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from "express"
+import express, { NextFunction, Request, Response, RequestHandler } from "express"
 import compression from "compression"
 import helmet from "helmet"
 import cors from "cors"
@@ -24,9 +24,10 @@ export default class App {
 
     this.initializeMiddlewares()
     this.initializeRoutes(routes)
+    this.initializeNotFoundHandler()
   }
 
-  public getApp() {
+  public getApp(): express.Application {
     return this.app
   }
 
@@ -55,6 +56,12 @@ export default class App {
     })
   }
 
+  private initializeNotFoundHandler() {
+    this.app.all("*", (req, res, next) => {
+      next(new BaseException("Not Found!", 404))
+    })
+  }
+
   public async start(): Promise<http.Server> {
     this.addErrorMiddleware()
 
@@ -72,12 +79,25 @@ export default class App {
   }
 
   protected addErrorMiddleware(): void {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    this.app.use((err: any, req: Request, res: Response) => {
-      logger.error(err)
-      return res.status(err instanceof BaseException ? err.status : 500).json({
-        code: err instanceof BaseException ? err.code : "UNKNOWN_ERROR",
-        message: err.message || "Unknown Error",
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    this.app.use((error: BaseException, request: Request, response: Response, next: NextFunction) => {
+      let status
+      let message
+      let stack
+
+      if (process.env.NODE_ENV === "development") {
+        status = error.status
+        message = error.message
+        stack = error.stack
+      } else {
+        status = error.status < 500 ? error.status : 500
+        message = error.status < 500 ? error.message : "Something went wrong!"
+      }
+
+      return response.status(status).json({
+        message,
+        status,
+        stack,
       })
     })
   }

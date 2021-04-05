@@ -3,7 +3,7 @@ import { ValidatedRequest } from "express-joi-validation"
 import { created_ago } from "../services/github.service"
 import ReposCache from "../caches/ReposCache"
 import { GetReposRequestSchema } from "./validation/repos.validation"
-import Redis from "../utils/RedisClient"
+import BaseException from "../exceptions/BaseException"
 
 export default class ReposController {
   public getRepos = async (
@@ -15,6 +15,10 @@ export default class ReposController {
       const { created, limit, language } = req.query
 
       let data = await ReposCache.getPopulars(created as created_ago, language)
+
+      if (!data) {
+        throw new BaseException("no data at the moment", 202)
+      }
 
       if (limit) {
         const { repos } = data

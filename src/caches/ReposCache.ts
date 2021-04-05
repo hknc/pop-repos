@@ -7,7 +7,7 @@ export default class ReposCache {
     createdAgo: created_ago = created_ago.ALL_TIME,
     language: null | string = null,
     reset = false
-  ): Promise<IReposPublicData> => {
+  ): Promise<IReposPublicData | void> => {
     const cacheKey = language ? `repos:${createdAgo}:${language}` : `repos:${createdAgo}`
 
     if (!reset) {
@@ -20,6 +20,8 @@ export default class ReposCache {
 
     // set cache if it's missing or resetting
     const reposData = await GitHubService.getPopRepos(createdAgo, language)
+
+    if (!reposData) return
 
     if (reposData?.repos?.length > 0) {
       await Redis.redis.set(cacheKey, JSON.stringify(reposData))

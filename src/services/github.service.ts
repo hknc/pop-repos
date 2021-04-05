@@ -3,6 +3,9 @@ import { githubClient } from "../utils/HttpClient"
 import { IGithubRepo, IGithubReposResponse, IReposPublicData } from "../interfaces/github.interface"
 import dayjs from "dayjs"
 import GitHubServiceException from "../exceptions/GitHubServiceException"
+import Redis from "../utils/RedisClient"
+
+const API_LOCK_SECONDS = 60
 
 export enum created_ago {
   DAY = "day",
@@ -20,6 +23,23 @@ const stripData = (repos: IGithubRepo[]) => {
 
 export default class GitHubService {
   private static reposPath = "/repositories"
+  private static apiLockKey = "api:lock"
+
+  private static isApiLocked = async () => {
+    if (await Redis.redis.get(GitHubService.apiLockKey)) {
+      logger.info("GitHubService: api is locked")
+      return true
+    }
+    return false
+  }
+
+  private static lockApi = async (apiRemaining: number) => {
+    if (apiRemaining && apiRemaining < 1) {
+      await Redis.redis.setex(GitHubService.apiLockKey, API_LOCK_SECONDS, "locked")
+      return true
+    }
+    return false
+  }
 
   private static getParams = (q: string, sort = "stars", order = "desc", per_page = 100, page = 1) => {
     return { q, sort, order, per_page, page }
@@ -28,7 +48,10 @@ export default class GitHubService {
   public static getPopRepos = async (
     createdAgo: created_ago,
     language: string | null = null
-  ): Promise<IReposPublicData> => {
+  ): Promise<IReposPublicData | void> => {
+    // cancel if api limit exceeded
+    if (await GitHubService.isApiLocked()) return
+
     let dateQuery
 
     if (createdAgo !== created_ago.ALL_TIME) {
@@ -63,6 +86,8 @@ export default class GitHubService {
         last_updated: dayjs().toISOString(),
         repos: stripData(reposResponse?.data?.items),
       }
+
+      GitHubService.lockApi(+reposResponse.headers["x-ratelimit-remaining"])
 
       return data
     } catch (error) {
