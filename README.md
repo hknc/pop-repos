@@ -24,11 +24,11 @@ Response times: `~10ms` at any time.
     - created=day|week|month|year|allTime
     - limit=10|50|100
     - language="string"
-  - example: `http://localhost:3000/repos?language=python&created=year&limit=50`
+  - example: `https://pop-repos.herokuapp.com/repos?language=python&created=year&limit=50`
 
 ### Online Demo
 
-[Online Demo -> https://pop-repos.herokuapp.com/](https://pop-repos.herokuapp.com/)
+[Online Demo -> https://pop-repos.herokuapp.com/](https://pop-repos.herokuapp.com/repos)
 
 ## Development setup
 
