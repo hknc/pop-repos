@@ -9,7 +9,7 @@
     "build": "tsc --project ./",
     "start:dev": "nodemon --config nodemon.json src/server.ts",
     "start:debug": "nodemon --config nodemon.json --inspect-brk src/server.ts",
-    "start:production": "node dist/server.js",
+    "start": "node dist/server.js",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "test": "jest",
     "test:watch": "jest --watch --forceExit --detectOpenHandles",
