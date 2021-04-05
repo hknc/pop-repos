@@ -1,6 +1,6 @@
 import logger from "../utils/logger"
 import { githubClient } from "../utils/HttpClient"
-import { IGithubReposResponse } from "../interfaces/github.interface"
+import { IGithubRepo, IGithubReposResponse, IReposPublicData } from "../interfaces/github.interface"
 import dayjs from "dayjs"
 import GitHubServiceException from "../exceptions/GitHubServiceException"
 
@@ -12,6 +12,12 @@ export enum created_ago {
   ALL_TIME = "allTime",
 }
 
+const stripData = (repos: IGithubRepo[]) => {
+  return repos.map(({ name, stargazers_count, language, html_url, created_at }) => {
+    return { name, stargazers_count, language, html_url, created_at }
+  })
+}
+
 export default class GitHubService {
   private static reposPath = "/repositories"
 
@@ -19,7 +25,7 @@ export default class GitHubService {
     return { q, sort, order, per_page, page }
   }
 
-  public static getPopRepos = async (createdAgo: created_ago): Promise<IGithubReposResponse> => {
+  public static getPopRepos = async (createdAgo: created_ago): Promise<IReposPublicData> => {
     let dateQuery
 
     if (createdAgo !== created_ago.ALL_TIME) {
@@ -31,18 +37,27 @@ export default class GitHubService {
     const params = GitHubService.getParams(query)
 
     try {
-      const reposResponse: IGithubReposResponse = await githubClient.get(`${GitHubService.reposPath}`, { params })
+      const reposResponse = await githubClient.get<IGithubReposResponse>(`${GitHubService.reposPath}`, { params })
 
       logger.info(
         "api call",
         { params },
         {
-          incomplete_results: reposResponse.incomplete_results,
-          repos: reposResponse.items.length,
+          incomplete_results: reposResponse.data.incomplete_results,
+          repos: reposResponse.data.items.length,
+          ratelimit: {
+            limit: reposResponse.headers["x-ratelimit-limit"],
+            remaining: reposResponse.headers["x-ratelimit-remaining"],
+          },
         }
       )
 
-      return reposResponse
+      const data: IReposPublicData = {
+        last_updated: dayjs().toISOString(),
+        repos: stripData(reposResponse.data.items),
+      }
+
+      return data
     } catch (error) {
       logger.error("api call error", { params }, error.message, error.response)
       throw new GitHubServiceException(error.message)

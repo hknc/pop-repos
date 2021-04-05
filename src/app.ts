@@ -1,4 +1,4 @@
-import express from "express"
+import express, { NextFunction, Request, Response } from "express"
 import compression from "compression"
 import helmet from "helmet"
 import cors from "cors"
@@ -8,6 +8,7 @@ import { AddressInfo } from "net"
 import Env from "./utils/Env"
 import Route from "./interfaces/route.interface"
 import logger from "./utils/logger"
+import BaseException from "./exceptions/BaseException"
 
 export default class App {
   public app: express.Application
@@ -55,6 +56,8 @@ export default class App {
   }
 
   public async start(): Promise<http.Server> {
+    this.addErrorMiddleware()
+
     const server = this.app.listen(+this.port, this.serverAddress, () => {
       const address: AddressInfo = server.address() as AddressInfo
 
@@ -66,5 +69,16 @@ export default class App {
     })
 
     return server
+  }
+
+  protected addErrorMiddleware(): void {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.app.use((err: any, req: Request, res: Response) => {
+      logger.error(err)
+      return res.status(err instanceof BaseException ? err.status : 500).json({
+        code: err instanceof BaseException ? err.code : "UNKNOWN_ERROR",
+        message: err.message || "Unknown Error",
+      })
+    })
   }
 }

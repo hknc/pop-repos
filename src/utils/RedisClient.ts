@@ -22,7 +22,7 @@ export default class Redis {
     const inst = new redis(options)
 
     inst.on("ready", () => logger.info("redis connected"))
-    inst.on("error", (err) => logger.error(`redis threw an error: ${err.message}`, err))
+    inst.on("error", (error) => logger.error(`redis threw an error: ${error.message}`, error.stack))
 
     return inst
   }

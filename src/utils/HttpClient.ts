@@ -4,6 +4,13 @@ import Env from "./Env"
 
 const GITHUB_BASE_URL = Env.get("GITHUB_BASE_URL", "")
 
+// declare module "axios" {
+//   interface AxiosInstance {
+//     // eslint-disable-next-line no-undef
+//     (config: AxiosRequestConfig): Promise<any>
+//   }
+// }
+
 class HttpClient {
   private instance: AxiosInstance
   private baseURL: string
@@ -21,7 +28,7 @@ class HttpClient {
     axiosInstance.defaults.paramsSerializer = this.paramsSerializer
     axiosInstance.defaults.withCredentials = true
 
-    axiosInstance.interceptors.response.use((response) => response.data)
+    //axiosInstance.interceptors.response.use((response) => response.data)
 
     this.instance = axiosInstance
   }

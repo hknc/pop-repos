@@ -1,11 +1,11 @@
-import { NextFunction, Request, Response } from "express"
+import { NextFunction, Response } from "express"
 import { ValidatedRequest } from "express-joi-validation"
 import { created_ago } from "../services/github.service"
 import ReposCache from "../caches/ReposCache"
 import { GetReposRequestSchema } from "./validation/repos.validation"
-import logger from "../utils/logger"
+import Redis from "../utils/RedisClient"
 
-class ReposController {
+export default class ReposController {
   public getRepos = async (
     req: ValidatedRequest<GetReposRequestSchema>,
     res: Response,
@@ -22,5 +22,3 @@ class ReposController {
     }
   }
 }
-
-export default ReposController

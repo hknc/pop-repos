@@ -1,13 +1,6 @@
 import GitHubService, { created_ago } from "../services/github.service"
 import Redis from "../utils/RedisClient"
-import { IGithubRepo, IReposPublicData } from "../interfaces/github.interface"
-import dayjs from "dayjs"
-
-const stripData = (repos: IGithubRepo[]) => {
-  return repos.map(({ name, stargazers_count, language, html_url, created_at }) => {
-    return { name, stargazers_count, language, html_url, created_at }
-  })
-}
+import { IReposPublicData } from "../interfaces/github.interface"
 
 export default class ReposCache {
   public static getPopulars = async (
@@ -27,15 +20,10 @@ export default class ReposCache {
     // set cache if it's missing or resetting
     const repos = await GitHubService.getPopRepos(createdAgo)
 
-    const data: IReposPublicData = {
-      last_updated: dayjs().toISOString(),
-      repos: stripData(repos.items),
-    }
-
     if (repos) {
-      await Redis.redis.set(cacheKey, JSON.stringify(data))
+      await Redis.redis.set(cacheKey, JSON.stringify(repos))
     }
 
-    return data
+    return repos
   }
 }
