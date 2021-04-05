@@ -68,5 +68,22 @@ describe("testing repos", () => {
       expect(response.body).toHaveProperty("last_updated")
       expect(response.body).toHaveProperty("repos")
     })
+
+    test("response according to `limit` query param", async () => {
+      const reposRoute = new ReposRoute()
+      const app = new App([reposRoute])
+
+      jest.spyOn(Redis.redis, "get").mockReturnValue(Promise.resolve(JSON.stringify(reposPublicMock)))
+
+      const response = await request(app.getApp())
+        .get(reposRoute.path)
+        .query({ limit: 10 })
+        .expect(200)
+        .expect("Content-Type", /application\/json/)
+
+      expect(response.body).toHaveProperty("last_updated")
+      expect(response.body).toHaveProperty("repos")
+      expect(response.body.repos.length).toBe(10)
+    })
   })
 })

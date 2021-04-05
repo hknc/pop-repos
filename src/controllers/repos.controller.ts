@@ -14,7 +14,13 @@ export default class ReposController {
     try {
       const { created, limit, language } = req.query
 
-      const data = await ReposCache.getPopulars(created as created_ago)
+      let data = await ReposCache.getPopulars(created as created_ago, language)
+
+      if (limit) {
+        const { repos } = data
+        const limitedRepos = repos.slice(0, limit)
+        data = { ...data, repos: limitedRepos }
+      }
 
       res.json(data)
     } catch (error) {

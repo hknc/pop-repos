@@ -25,14 +25,21 @@ export default class GitHubService {
     return { q, sort, order, per_page, page }
   }
 
-  public static getPopRepos = async (createdAgo: created_ago): Promise<IReposPublicData> => {
+  public static getPopRepos = async (
+    createdAgo: created_ago,
+    language: string | null = null
+  ): Promise<IReposPublicData> => {
     let dateQuery
 
     if (createdAgo !== created_ago.ALL_TIME) {
       dateQuery = `created:">${dayjs().subtract(1, createdAgo).format("YYYY-MM-DD")}"`
     }
 
-    const query: string = dateQuery ? `stars:>=1 ${dateQuery}` : "stars:>=1"
+    let query: string = dateQuery ? `stars:>=1 ${dateQuery}` : "stars:>=1"
+
+    if (language) {
+      query = dateQuery ? `language:${language} ${dateQuery}` : `language:${language}`
+    }
 
     const params = GitHubService.getParams(query)
 
@@ -54,13 +61,16 @@ export default class GitHubService {
 
       const data: IReposPublicData = {
         last_updated: dayjs().toISOString(),
-        repos: stripData(reposResponse.data.items),
+        repos: stripData(reposResponse?.data?.items),
       }
 
       return data
     } catch (error) {
-      logger.error("api call error", { params }, error.message, error.response)
-      throw new GitHubServiceException(error.message)
+      logger.error("api call error", { params }, error.message)
+      return {
+        last_updated: dayjs().toISOString(),
+        repos: [],
+      }
     }
   }
 }

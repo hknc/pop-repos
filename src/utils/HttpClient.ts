@@ -4,13 +4,6 @@ import Env from "./Env"
 
 const GITHUB_BASE_URL = Env.get("GITHUB_BASE_URL", "")
 
-// declare module "axios" {
-//   interface AxiosInstance {
-//     // eslint-disable-next-line no-undef
-//     (config: AxiosRequestConfig): Promise<any>
-//   }
-// }
-
 class HttpClient {
   private instance: AxiosInstance
   private baseURL: string
@@ -33,7 +26,7 @@ class HttpClient {
     this.instance = axiosInstance
   }
 
-  public getInstance = () => {
+  public getInstance = (): AxiosInstance => {
     if (!this.instance) new HttpClient(this.baseURL)
 
     return this.instance
