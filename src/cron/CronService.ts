@@ -4,7 +4,6 @@ import { created_ago } from "../services/github.service"
 import { masterElector } from "../server"
 import logger from "../utils/logger"
 import Redis from "../utils/RedisClient"
-import { IReposPublicData } from "../interfaces/github.interface"
 
 const CRON_MINUTES = 1
 const UPDATE_CACHES_MINUTES = 5
