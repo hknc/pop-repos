@@ -6,7 +6,7 @@ A backend application for discovering popular repositories on GitHub.
 
 This highly scalable and performant application serves list of GitHub repos sorted by number of stars.
 
-Response times: `~10ms` at any time.
+Response times: `~100ms` [@heroku free dyno deployment](https://pop-repos.herokuapp.com/repos) at any time.
 
 - Service can return the most popular repositories created from specific time points onwards:
 
