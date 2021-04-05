@@ -8,7 +8,7 @@ export default class ReposCache {
     language: null | string = null,
     reset = false
   ): Promise<IReposPublicData | void> => {
-    const cacheKey = language ? `repos:${createdAgo}:${language}` : `repos:${createdAgo}`
+    const cacheKey = language ? `repos:${createdAgo}:${language.toLowerCase()}` : `repos:${createdAgo}`
 
     if (!reset) {
       const cache = await Redis.redis.get(cacheKey)
@@ -29,7 +29,7 @@ export default class ReposCache {
 
     // save the language so cron job can update it
     if (reposData?.repos?.length > 0 && language) {
-      await Redis.redis.sadd("languages", language)
+      await Redis.redis.sadd("languages", language.toLowerCase())
     }
 
     return reposData
