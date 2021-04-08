@@ -1,6 +1,7 @@
-import GitHubService, { created_ago } from "../services/github.service"
+import GitHubService, { created_ago } from "../services/GithubService"
 import Redis from "../utils/RedisClient"
 import { IReposPublicData } from "../interfaces/github.interface"
+import logger from "../utils/logger"
 
 export default class ReposCache {
   public static getPopulars = async (

@@ -1,6 +1,6 @@
 import { Router } from "express"
 import Route from "../interfaces/route.interface"
-import IndexController from "../controllers/main.controller"
+import IndexController from "../controllers/IndexController"
 
 class IndexRoute implements Route {
   public path = "/"

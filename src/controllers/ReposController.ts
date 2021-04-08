@@ -1,6 +1,6 @@
 import { NextFunction, Response } from "express"
 import { ValidatedRequest } from "express-joi-validation"
-import { created_ago } from "../services/github.service"
+import { created_ago } from "../services/GithubService"
 import ReposCache from "../caches/ReposCache"
 import { GetReposRequestSchema } from "./validation/repos.validation"
 import BaseException from "../exceptions/BaseException"

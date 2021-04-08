@@ -1,6 +1,6 @@
 import request from "supertest"
 import App from "../app"
-import IndexRoute from "../routes/index.route"
+import IndexRoute from "../routes/IndexRoute"
 
 describe("testing main", () => {
   describe("[GET] /", () => {

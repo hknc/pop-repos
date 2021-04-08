@@ -1,19 +1,25 @@
 import request from "supertest"
 import nock from "nock"
 import App from "../app"
-import ReposRoute from "../routes/repos.route"
+import ReposRoute from "../routes/ReposRoute"
 import Redis from "../utils/RedisClient"
 import reposPublicMock from "./__mocks__/reposPublic.mock"
 import reposMock from "./__mocks__/repos.mock"
-import { created_ago } from "../services/github.service"
+import { created_ago } from "../services/GithubService"
 
-jest.mock("ioredis")
-
-Redis.init()
+jest.mock("../utils/RedisClient", () => {
+  return {
+    init: jest.fn(),
+    create: jest.fn(),
+    redis: { get: jest.fn(), set: jest.fn(), setex: jest.fn(), smembers: jest.fn() },
+  }
+})
 
 describe("testing repos", () => {
   afterEach((done) => {
     nock.cleanAll()
+    jest.clearAllMocks()
+
     done()
   })
 
@@ -22,7 +28,7 @@ describe("testing repos", () => {
       const reposRoute = new ReposRoute()
       const app = new App([reposRoute])
 
-      jest.spyOn(Redis.redis, "get").mockReturnValue(Promise.resolve(JSON.stringify(reposPublicMock)))
+      jest.spyOn(Redis.redis, "get").mockResolvedValue(JSON.stringify(reposPublicMock))
 
       const response = await request(app.getApp())
         .get(reposRoute.path)
@@ -35,7 +41,8 @@ describe("testing repos", () => {
       const reposRoute = new ReposRoute()
       const app = new App([reposRoute])
 
-      jest.spyOn(Redis.redis, "get").mockReturnValue(Promise.resolve(null))
+      jest.spyOn(Redis.redis, "get").mockResolvedValue(null)
+      jest.spyOn(Redis.redis, "set").mockReturnValue()
 
       const scope = nock(process.env.GITHUB_BASE_URL as string)
         .get("/repositories")
@@ -57,7 +64,7 @@ describe("testing repos", () => {
       const reposRoute = new ReposRoute()
       const app = new App([reposRoute])
 
-      jest.spyOn(Redis.redis, "get").mockReturnValue(Promise.resolve(JSON.stringify(reposPublicMock)))
+      jest.spyOn(Redis.redis, "get").mockResolvedValue(JSON.stringify(reposPublicMock))
 
       const response = await request(app.getApp())
         .get(reposRoute.path)
@@ -73,7 +80,7 @@ describe("testing repos", () => {
       const reposRoute = new ReposRoute()
       const app = new App([reposRoute])
 
-      jest.spyOn(Redis.redis, "get").mockReturnValue(Promise.resolve(JSON.stringify(reposPublicMock)))
+      jest.spyOn(Redis.redis, "get").mockResolvedValue(JSON.stringify(reposPublicMock))
 
       const response = await request(app.getApp())
         .get(reposRoute.path)

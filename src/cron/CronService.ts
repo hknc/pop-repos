@@ -1,6 +1,6 @@
 import dayjs from "dayjs"
 import ReposCache from "../caches/ReposCache"
-import { created_ago } from "../services/github.service"
+import { created_ago } from "../services/GithubService"
 import { masterElector } from "../server"
 import logger from "../utils/logger"
 import Redis from "../utils/RedisClient"
@@ -51,7 +51,10 @@ export default class CronService {
 
           await Redis.redis.setex(`cron:update-caches:${created}:${language}`, minutes * 60, "waitForIt") // set for next schedule
         } catch (error) {
-          logger.error(`CronService:updateCaches: failed to update cache: ${created}:${language}`, error.message)
+          logger.error(
+            `CronService:updateLanguagesCaches: failed to update cache: ${created}:${language}`,
+            error.message
+          )
         }
       })
     })

@@ -1,7 +1,8 @@
+import dayjs from "dayjs"
+import Joi, { Schema } from "joi"
 import logger from "../utils/logger"
 import { githubClient } from "../utils/HttpClient"
 import { IGithubRepo, IGithubReposResponse, IReposPublicData } from "../interfaces/github.interface"
-import dayjs from "dayjs"
 import GitHubServiceException from "../exceptions/GitHubServiceException"
 import Redis from "../utils/RedisClient"
 
@@ -15,10 +16,26 @@ export enum created_ago {
   ALL_TIME = "allTime",
 }
 
-const stripData = (repos: IGithubRepo[]) => {
-  return repos.map(({ name, stargazers_count, language, html_url, created_at }) => {
-    return { name, stargazers_count, language, html_url, created_at }
-  })
+const reposSchema = Joi.object({
+  total_count: Joi.number().required(),
+  incomplete_results: Joi.boolean().required(),
+  items: Joi.array().items({
+    name: Joi.string().required(),
+    stargazers_count: Joi.number().required(),
+    language: Joi.string().allow(null),
+    html_url: Joi.string().required(),
+    created_at: Joi.string().required(),
+  }),
+})
+
+const valiadateAndStripData = (schema: Schema, data: IGithubReposResponse): IGithubRepo[] => {
+  const validated = schema.validate(data, { stripUnknown: true })
+
+  if (validated.error) {
+    throw new GitHubServiceException("GitHubService: failed api data validation")
+  }
+
+  return validated.value.items
 }
 
 export default class GitHubService {
@@ -82,16 +99,16 @@ export default class GitHubService {
         }
       )
 
-      const data: IReposPublicData = {
+      const data = {
         last_updated: dayjs().toISOString(),
-        repos: stripData(reposResponse?.data?.items),
+        repos: valiadateAndStripData(reposSchema, reposResponse?.data),
       }
 
-      GitHubService.lockApi(+reposResponse.headers["x-ratelimit-remaining"])
+      await GitHubService.lockApi(+reposResponse.headers["x-ratelimit-remaining"])
 
       return data
     } catch (error) {
-      logger.error("api call error", { params }, error.message)
+      logger.error("api call error", { params }, { message: error.message, data: error.response.data })
       return {
         last_updated: dayjs().toISOString(),
         repos: [],

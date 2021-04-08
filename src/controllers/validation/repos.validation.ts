@@ -1,6 +1,6 @@
 import * as Joi from "joi"
 import { ContainerTypes, ValidatedRequestSchema, createValidator } from "express-joi-validation"
-import { created_ago } from "../../services/github.service"
+import { created_ago } from "../../services/GithubService"
 
 export const validator = createValidator()
 

@@ -1,7 +1,7 @@
 import App from "./app"
 import CronService from "./cron/CronService"
-import IndexRoute from "./routes/index.route"
-import ReposRoute from "./routes/repos.route"
+import IndexRoute from "./routes/IndexRoute"
+import ReposRoute from "./routes/ReposRoute"
 import MasterElector from "./utils/MasterElector"
 import Redis from "./utils/RedisClient"
 

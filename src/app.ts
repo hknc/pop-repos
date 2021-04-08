@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response, RequestHandler } from "express"
+import express, { NextFunction, Request, Response } from "express"
 import compression from "compression"
 import helmet from "helmet"
 import cors from "cors"

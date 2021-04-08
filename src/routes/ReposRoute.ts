@@ -1,6 +1,6 @@
 import { Router } from "express"
 import { qetReposQuerySchema, validator } from "../controllers/validation/repos.validation"
-import ReposController from "../controllers/repos.controller"
+import ReposController from "../controllers/ReposController"
 import Route from "../interfaces/route.interface"
 
 class ReposRoute implements Route {
